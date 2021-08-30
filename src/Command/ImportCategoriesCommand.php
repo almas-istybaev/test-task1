@@ -49,8 +49,11 @@ class ImportCategoriesCommand extends Command
 
         foreach ($categories as $category) {
             $newCategory = new Category();
-            $newCategory->setEId($category['eId']);
             $newCategory->setTitle($category['title']);
+
+            if(in_array('eId', $category, true)) {
+                $newCategory->setEId($category['eId']);
+            }
 
             $errors = $this->validator->validate($newCategory);
 
