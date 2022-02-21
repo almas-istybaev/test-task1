@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  test-task1_app:
+    container_name: test-task1_app
+    build: app
+    volumes:
+      - ..:/var/www/test-task1:rw
+    command: php-fpm
+    depends_on:
+      - test-task1_postgres
+    working_dir: /var/www/test-task1
+    networks:
+      - nginx-proxy
+
+  test-task1_nginx:
+    container_name: test-task1_nginx
+    build: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ..:/var/www/test-task1:rw
+    depends_on:
+      - test-task1_app
+    networks:
+      - nginx-proxy
+
+  test-task1_postgres:
+    container_name: test-task1_postgres
+    build: postgres
+    volumes:
+      - ./postgres/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: test-task1
+      POSTGRES_USER: test-task1
+      POSTGRES_PASSWORD: wizard
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    external:
+      name: nginx-proxy
